@@ -1,6 +1,7 @@
 #include <iostream>
 #include <random>
 #include <Windows.h>
+#include <conio.h>
 
 using namespace std;
 
@@ -10,18 +11,17 @@ void ustaw_statki(int plansza[10][10]);
 void wypisz_cyfry(int plansza[10][10]);
 void wypisz_znaki(int plansza[10][10]);
 int sprawdzanie_miejsca(int x,int y, int plansza[10][10],int kierunek, int maszt);
+void ustaw_statki_petla(int plansza[10][10]);
 
 int main()
 {
 	int plansza[10][10]{ 0 };
-		ustaw_statki(plansza);
-		wypisz_cyfry(plansza);
-		cout << endl;
-		wypisz_znaki(plansza);
-
-
-
-	//system("PAUSE");
+		//ustaw_statki(plansza);
+		//wypisz_cyfry(plansza);
+		//cout << endl;
+		//wypisz_znaki(plansza);
+	ustaw_statki_petla(plansza);
+		//system("PAUSE");
 }
 
 void ustaw_statki(int plansza[10][10])
@@ -30,11 +30,9 @@ void ustaw_statki(int plansza[10][10])
 	mt19937 losowa(ziarno());
 	uniform_int_distribution<int> zakres_plansza(0, 9);
 	uniform_int_distribution<int> zakres_kierunek(0, 3);
-
 	//int x = 5;
 	//int y = 5;
 	//int kierunek = 2;
-
 	for (int maszt = 4; maszt > 0; maszt--)
 	{
 		for (int ilosc = 1;ilosc < (6 - maszt);)
@@ -344,14 +342,14 @@ void wypisz_znaki(int plansza[10][10])
 		{
 			cout.width(3);
 			cout.fill(' ');
-			if (plansza[i][j] == -1)					cout << "+";
+			if (plansza[i][j] == -1) cout << "+";
 			else if (plansza[i][j] >= 1)
 			{
 				SetConsoleTextAttribute(hConsole, 4);	//czerowny
-														cout << plansza[i][j];  //cout << char(0xDC);
+				cout << plansza[i][j];					//cout << char(0xDC);
 				SetConsoleTextAttribute(hConsole, 15);	//standardowy
 			}
-			else if (plansza[i][j] ==0)					cout << " ";
+			else if (plansza[i][j] ==0) cout << " ";
 		}
 		cout << endl;
 	}
@@ -388,4 +386,45 @@ int sprawdzanie_miejsca(int x, int y, int plansza[10][10], int kierunek, int mas
 			}
 		}
 	return 1;
+}
+
+void ustaw_statki_petla(int plansza[10][10])
+{
+	int interwal = 2000;
+	bool czy_dziala = true;
+	while (true)
+	{
+		if (GetAsyncKeyState('Q') * 0x1) break;
+		if (GetAsyncKeyState('P') * 0x1)
+		{
+			cout << endl << "podaj nowa predkasc w ms: ";
+			FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
+			cin >> interwal;
+		}
+		if (GetAsyncKeyState('Z') * 0x1)
+		{
+			while (true)
+			{
+				if (czy_dziala) cout << endl << "pauza";
+				czy_dziala = false;
+				Sleep(10);
+				if (GetAsyncKeyState('K') * 0x1)
+				{
+					czy_dziala = true;
+					break;
+				}
+			}
+		}
+		system("CLS");
+		memset(plansza, 0, 100 * sizeof(int));
+		ustaw_statki(plansza);
+		wypisz_cyfry(plansza);
+		cout << endl;
+		wypisz_znaki(plansza);		
+		cout << endl << "predkosc: " << interwal << "ms" << endl;;
+		cout << endl << "wcisnij P aby zmienic predkosc";
+		cout << endl << "wcisnij Z aby zatrzymac, K aby kontynuowac";
+		cout << endl << "wcisnij Q aby zakonczyc";	
+		Sleep(interwal);	
+	}
 }
